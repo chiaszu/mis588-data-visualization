@@ -5,4 +5,4 @@
 - [Assignement 3 | D3 tutorial: brush and highlight bars](Assignement3)
 - [Assignement 4 | D3 tutorial: choropleth map](Assignement4)
 - [Assignement 5 | D3 tutorial: streamgraph](Assignement5)
-- [Assignement 4 | D3 tutorial: match streamgraph and bar chart](Assignement6)
+- [Assignement 6 | D3 tutorial: match streamgraph and bar chart](Assignement6)
