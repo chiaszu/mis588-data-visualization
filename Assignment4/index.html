@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Load d3.js -->
+    <script src="https://d3js.org/d3.v6.js"></script>
+    <script src="https://unpkg.com/topojson@3"></script>
+    <!-- Create an element where the map will take place -->
+    <svg id="my_dataviz" width="1200" height="900"></svg>
+    <style>
+      .county-borders {
+        stroke: white;
+        fill: none;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      // The svg
+      const svg = d3.select("svg"),
+        width = +svg.attr("width"),
+        height = +svg.attr("height");
+
+      // Map and Projection
+      const projection = d3
+        .geoMercator()
+        .center([122, 24]) // coordinate to center the map
+        .scale(8000); // scale of the map
+      const path = d3.geoPath(projection);
+
+      let data = new Map();
+      const blues = d3
+        .scaleSequential()
+        .domain([0, 200])
+        .interpolator(d3.interpolateBlues);
+
+      d3.json(
+        "https://cdn.jsdelivr.net/npm/taiwan-atlas/counties-10t.json"
+      ).then(function (topo) {
+        d3.csv("data4.csv", function (d) {
+          data.set(d.id, +d.population);
+        }).then(function () {
+          svg
+            .selectAll("path")
+            .data(topojson.feature(topo, topo.objects.counties).features)
+            .join("path")
+            .attr("d", path) // draw map shapes
+            // set the color of each country
+            .attr("fill", function (d) {
+              //   console.log(d.properties.COUNTYID);
+              //   console.log(data);
+              d.total = data.get(d.properties.COUNTYID) || 0;
+              //   console.log(d.total);
+              return blues(d.total);
+            });
+          svg
+            .append("path")
+            .datum(topojson.feature(topo, topo.objects.counties))
+            .classed("county-borders", true) // need to make stroke white in CSS
+            .attr(
+              "d",
+              path(
+                topojson.mesh(topo, topo.objects.counties, function (a, b) {
+                  return a !== b;
+                })
+              )
+            ); // draw county borders (need CSS stroke setting)
+        });
+      });
+    </script>
+  </body>
+</html>
